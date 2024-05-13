@@ -8,10 +8,17 @@ import (
 	"net/http"
 	"os"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
-	url := fmt.Sprintf("https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeInstructions=true&min%s=10&apiKey=2a5896d0a98840049a49c52f14121a06&addRecipeInformation=true&maxReadyTime=%s&fillIngredients=true", nutrient, cookTime)
+	err := godotenv.Load()
+	if err != nil{
+		log.Fatal("Error loading.env file")
+	}
+	apiKey := os.Getenv("API_KEY")
+
+	url := fmt.Sprintf("https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeInstructions=true&min%s=10&apiKey=%s&addRecipeInformation=true&maxReadyTime=%s&fillIngredients=true", nutrient, apiKey, cookTime)
 
 	response, err := http.Get(url)
 
