@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -41,6 +40,7 @@ func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 			"instructions": recipe.Instructions,
 		})
 	}
+
 	var payload = Payload{
 		Data: data,
 	}
@@ -55,6 +55,7 @@ func main() {
 		cookTime := c.Query("cook_time")
 		MakeRequest(c, nutrient, cookTime)
 	})
+
 	router.Run("localhost:8080")
 }
 

@@ -1,5 +1,6 @@
 package main
 
+
 import (
 	"fmt"
 	"io"
@@ -25,6 +26,7 @@ func TestMakeRequest(t *testing.T) {
 	}
 
 	r := SetUpRouter()
+
 	r.GET("/recipes", func(c *gin.Context) {
 		nutrient := c.Query("nutrient")
 		cookTime := c.Query("cook_time")
@@ -36,6 +38,7 @@ func TestMakeRequest(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	responseData, _ := io.ReadAll(w.Body)
+	
 	assert.Equal(t, string(mockResponse), string(responseData))
 	assert.Equal(t, http.StatusOK, w.Code)
 }
