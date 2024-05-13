@@ -1,1 +1,1 @@
-web: bin/recipes-service-be
+web: bin/recipes
