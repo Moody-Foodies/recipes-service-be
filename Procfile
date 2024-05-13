@@ -1,1 +1,1 @@
-web: bin/go-registration-api
+web: bin/recipes-service-be
