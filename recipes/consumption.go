@@ -14,7 +14,7 @@ import (
 func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 	err := godotenv.Load()
 	if err != nil{
-		log.Fatal("Error loading.env file")
+		fmt.Println("Error loading.env file")
 	}
 	apiKey := os.Getenv("API_KEY")
 
