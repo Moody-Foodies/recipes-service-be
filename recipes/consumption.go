@@ -63,7 +63,7 @@ func main() {
 		MakeRequest(c, nutrient, cookTime)
 	})
 
-	router.Run("localhost:8080")
+	router.Run()
 }
 
 type Payload struct {
