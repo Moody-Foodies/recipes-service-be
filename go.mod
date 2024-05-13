@@ -1,4 +1,4 @@
-module example.com/recipes-api-service
+module example.com/recipes-service-be
 
 go 1.22.3
 
