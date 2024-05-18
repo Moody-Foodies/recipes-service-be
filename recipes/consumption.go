@@ -44,7 +44,7 @@ func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 			"title":        recipe.Title,
 			"cook_time":    recipe.CookTime,
 			"image":        recipe.Image,
-			"description":  recipe.Description,
+			"description":  "Placeholder Description",
 			"ingredients":  recipe.Ingredients,
 			"instructions": recipe.Instructions,
 		})
