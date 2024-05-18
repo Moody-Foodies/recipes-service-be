@@ -7,13 +7,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 	err := godotenv.Load()
-	if err != nil{
+	if err != nil {
 		fmt.Println("Error loading.env file")
 	}
 	apiKey := os.Getenv("API_KEY")
@@ -43,6 +44,7 @@ func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 			"title":        recipe.Title,
 			"cook_time":    recipe.CookTime,
 			"image":        recipe.Image,
+			"description":  recipe.Description,
 			"ingredients":  recipe.Ingredients,
 			"instructions": recipe.Instructions,
 		})
@@ -79,6 +81,7 @@ type Recipe struct {
 	Title        string         `json:"title"`
 	CookTime     int            `json:"readyInMinutes"`
 	Image        string         `json:"image"`
+	Description  string         `json:"description"`
 	Ingredients  []Ingredient   `json:"extendedIngredients"`
 	Instructions []Instructions `json:"analyzedInstructions"`
 }
