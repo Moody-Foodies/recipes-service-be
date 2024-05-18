@@ -19,7 +19,7 @@ func SetUpRouter() *gin.Engine{
 }
 
 func TestMakeRequest(t *testing.T) {
-	mockResponse, err := os.ReadFile("testdata/magnesium_fixture.json")
+	mockResponse, err := os.ReadFile("testdata/magnesium_fixture_data.json")
 	if err != nil {
 		fmt.Println("File reading error", err)
 		return
