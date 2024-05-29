@@ -12,7 +12,6 @@ import (
 )
 
 func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
-
 	apiKey := os.Getenv("API_KEY")
 
 	url := fmt.Sprintf("https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeInstructions=true&min%s=10&apiKey=%s&addRecipeInformation=true&maxReadyTime=%s&fillIngredients=true", nutrient, apiKey, cookTime)
