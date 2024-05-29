@@ -1,4 +1,4 @@
-package main
+package recipes
 
 import (
 	"encoding/json"
@@ -9,14 +9,10 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading.env file")
-	}
+
 	apiKey := os.Getenv("API_KEY")
 
 	url := fmt.Sprintf("https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeInstructions=true&min%s=10&apiKey=%s&addRecipeInformation=true&maxReadyTime=%s&fillIngredients=true", nutrient, apiKey, cookTime)
@@ -55,17 +51,6 @@ func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 	}
 
 	c.JSON(http.StatusOK, payload)
-}
-
-func main() {
-	router := gin.Default()
-	router.GET("/recipes", func(c *gin.Context) {
-		nutrient := c.Query("nutrient")
-		cookTime := c.Query("cook_time")
-		MakeRequest(c, nutrient, cookTime)
-	})
-
-	router.Run()
 }
 
 type Payload struct {
