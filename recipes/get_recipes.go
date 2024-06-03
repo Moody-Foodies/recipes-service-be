@@ -8,13 +8,32 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"example.com/recipes-service-be/scraper"
 )
 
-func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
-	apiKey := os.Getenv("API_KEY")
+func MakeRequest(nutrient string, cookTime string, apiURL string) (Payload) {
+	var nutrientNew string
 
-	url := fmt.Sprintf("https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeInstructions=true&min%s=10&apiKey=%s&addRecipeInformation=true&maxReadyTime=%s&fillIngredients=true", nutrient, apiKey, cookTime)
+	if nutrient == "Folic Acid" {
+		nutrientNew = "%5BFOLAC%5D"
+	}
+	if nutrient == "Magnesium" {
+		nutrientNew = "%5BMG%5D"
+	}
+	if nutrient == "Fiber" {
+		nutrientNew = "%5BFIBTG%5D"
+	}
+	if nutrient == "Vitamin B12" {
+		nutrientNew = "%5BVITB12%5D"
+	}
+	if nutrient == "Vitamin D" {
+		nutrientNew = "%5BVITD%5D"
+	}
+
+	apiKey := os.Getenv("API_KEY")
+	appID := os.Getenv("APP_ID")
+
+	url := fmt.Sprintf("%s?type=public&app_id=%s&app_key=%s&mealType=Lunch&time=%s&imageSize=REGULAR&nutrients%s=10&dishType=main_course", apiURL, appID, apiKey, cookTime, nutrientNew)
 
 	response, err := http.Get(url)
 
@@ -32,16 +51,23 @@ func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 	json.Unmarshal(responseData, &responseObject)
 
 	var data []map[string]any
+	var instructions []string
 
 	for _, recipe := range responseObject.Recipes {
+		instructions = scraper.ScrapeInstructions(recipe.RecipeInfo.Url)
+
+		if instructions == nil {
+			instructions = append(instructions, recipe.RecipeInfo.Url)
+		}
+
 		data = append(data, map[string]any{
-			"id":           recipe.ID,
-			"title":        recipe.Title,
-			"cook_time":    recipe.CookTime,
-			"image":        recipe.Image,
-			"description":  "Placeholder Description",
-			"ingredients":  recipe.Ingredients,
-			"instructions": recipe.Instructions,
+			"id":           1,
+			"title":        recipe.RecipeInfo.Title,
+			"cook_time":    recipe.RecipeInfo.CookTime,
+			"image":        recipe.RecipeInfo.Images.Large.Url,
+			"description":  fmt.Sprintf("%s rich recipe to help your current mood", nutrient),
+			"ingredients":  recipe.RecipeInfo.Ingredients,
+			"instructions": instructions,
 		})
 	}
 
@@ -49,7 +75,7 @@ func MakeRequest(c *gin.Context, nutrient string, cookTime string) {
 		Data: data,
 	}
 
-	c.JSON(http.StatusOK, payload)
+	return payload
 }
 
 type Payload struct {
@@ -57,27 +83,26 @@ type Payload struct {
 }
 
 type Response struct {
-	Recipes []Recipe `json:"results"`
+	Recipes []Recipe `json:"hits"`
 }
 
 type Recipe struct {
-	ID           int            `json:"id"`
-	Title        string         `json:"title"`
-	CookTime     int            `json:"readyInMinutes"`
-	Image        string         `json:"image"`
-	Description  string         `json:"description"`
-	Ingredients  []Ingredient   `json:"extendedIngredients"`
-	Instructions []Instructions `json:"analyzedInstructions"`
+	RecipeInfo RecipeInfo `json:"recipe"`
+}
+type RecipeInfo struct {
+	ID          int      `json:"id"`
+	Title       string   `json:"label"`
+	Images      Images   `json:"images"`
+	CookTime    any      `json:"totalTime"`
+	Description string   `json:"description"`
+	Url         string   `json:"url"`
+	Ingredients []string `json:"ingredientLines"`
 }
 
-type Ingredient struct {
-	Name string `json:"original"`
+type Images struct {
+	Large Url `json:"LARGE"`
 }
 
-type Instructions struct {
-	Steps []Step `json:"steps"`
-}
-
-type Step struct {
-	Step string `json:"step"`
+type Url struct {
+	Url string `json:"url"`
 }
