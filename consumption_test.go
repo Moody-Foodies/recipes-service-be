@@ -1,50 +1,51 @@
 package main
 
-
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
-	"github.com/joho/godotenv"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+	"encoding/json"
 	"example.com/recipes-service-be/recipes"
+	"github.com/stretchr/testify/require"
 )
 
-func SetUpRouter() *gin.Engine{
-	router := gin.Default()
-	return router
-}
-
 func TestMakeRequest(t *testing.T) {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading.env file")
-	}
-
-	mockResponse, err := os.ReadFile("recipes/testdata/magnesium_fixture_data.json")
+	mockReturn, err := os.ReadFile("recipes/testdata/magnesium_fixture_data.json")
 	if err != nil {
 		fmt.Println("File reading error", err)
 		return
 	}
 
-	r := SetUpRouter()
+	mockResponse, err := os.ReadFile("recipes/testdata/edamam_response_data.json")
+	if err != nil {
+		fmt.Println("File reading error", err)
+		return
+	}
 
-	r.GET("/recipes", func(c *gin.Context) {
-		nutrient := c.Query("nutrient")
-		cookTime := c.Query("cook_time")
-		recipes.MakeRequest(c, nutrient, cookTime)
+	testCase := struct {
+		name string
+		retCode int
+		retBody []byte
+		wantBody string
+	}{
+		name: "Response Test",
+		retCode: 200,
+		retBody: mockResponse,
+		wantBody: string(mockReturn),
+	}
+
+	t.Run(testCase.name, func(t *testing.T) {
+		testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+			w.WriteHeader(testCase.retCode)
+			_, err := w.Write(testCase.retBody)
+			require.NoError(t, err)
+		}))
+		defer testServer.Close()
+		
+		gotBody, _ := json.Marshal(recipes.MakeRequest("Magnesium", "600", testServer.URL))
+		require.EqualValues(t, testCase.wantBody, string(gotBody))
 	})
 
-	req, _ := http.NewRequest("GET", "/recipes?nutrient=Magnesium&cook_time=600", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	responseData, _ := io.ReadAll(w.Body)
-	
-	assert.Equal(t, string(mockResponse), string(responseData))
-	assert.Equal(t, http.StatusOK, w.Code)
 }
