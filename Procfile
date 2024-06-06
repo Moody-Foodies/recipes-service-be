@@ -1,1 +1,1 @@
-web: bin/recipes
+web: bin/main.go
