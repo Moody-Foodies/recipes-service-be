@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"example.com/recipes-service-be/scraper"
 )
@@ -62,7 +61,7 @@ func MakeRequest(nutrient string, cookTime string, apiURL string) (Payload) {
 		}
 
 		data = append(data, map[string]any{
-			"id":           strings.Count(recipe.RecipeInfo.Title, ""),
+			"id":           recipe.RecipeInfo.Url,
 			"title":        recipe.RecipeInfo.Title,
 			"cook_time":    recipe.RecipeInfo.CookTime,
 			"image":        recipe.RecipeInfo.Images.Large.Url,
