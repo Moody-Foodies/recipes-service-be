@@ -61,7 +61,7 @@ func MakeRequest(nutrient string, cookTime string, apiURL string) (Payload) {
 		}
 
 		data = append(data, map[string]any{
-			"id":           1,
+			"id":           recipe.RecipeInfo.Url,
 			"title":        recipe.RecipeInfo.Title,
 			"cook_time":    recipe.RecipeInfo.CookTime,
 			"image":        recipe.RecipeInfo.Images.Large.Url,
