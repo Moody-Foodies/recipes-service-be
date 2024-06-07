@@ -2,6 +2,8 @@
 ### Summary:
 This application acts as a micro service for the BrainFood BE Gateway application. It's responsibility is to make HTTP Requests to the Edamam Recipe Search API endpoint with specific query parameters of nutrients required to be present in recipes, based on information provided in the requests from the internal, backend gateway. It then takes the response that it receives from the external api, restructures the data, and returns it to the BrainFood gateway application to be served to our frontend application. It utilizes a web scraper built with the go-colly package in order to scrape recipe instructions from the webpages which recipes are lifted from and restructure them into its response.
 
+[Main BrainFood Repository](https://github.com/Moody-Foodies/brain-food-be)
+
 ### Versioning
 - go v1.22.3 darwin/arm64
 
